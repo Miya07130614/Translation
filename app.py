@@ -18,7 +18,20 @@ zh_ko_dict = {
     "家人": "가족",
     "愛": "사랑"
 }
-
+# 建立題庫
+zh_ko_dict = {
+    "你好": "Hello",
+    "謝謝": "Thank you",
+    "對不起": "Sorry",
+    "早安": "Good morning",
+    "晚安": "Good night",
+    "老師": "Teacher",
+    "學生": "Student",
+    "朋友": "Friend",
+    "Pikmin": "皮克敏",
+    "家人": "Family",
+    "愛": "Love"
+}
 
 
 
@@ -35,6 +48,19 @@ def ask():
         question = request.form.get('question', '').strip()
         # 3. 查詢題庫的對應答案
         answer = zh_ko_dict.get(question, "抱歉，我目前沒有這個詞的韓文對應。")
+        # 4. 回傳答案給學生
+        return render_template('ask.html', question=question, answer=answer)
+    # GET 時給空白欄位
+    return render_template('ask.html', question="", answer="")
+
+
+@app.route('/ask', methods=['GET', 'POST'])
+def ask():
+    if request.method == 'POST':
+        # 2. 讀取學生的問題
+        question = request.form.get('question', '').strip()
+        # 3. 查詢題庫的對應答案
+        answer = zh_ko_dict.get(question, "抱歉，我目前沒有這個詞的英文對應。")
         # 4. 回傳答案給學生
         return render_template('ask.html', question=question, answer=answer)
     # GET 時給空白欄位
