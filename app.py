@@ -20,7 +20,7 @@ zh_ko_dict = {
 }
 # 建立題庫
 zh_ko_dict = {
-    "你好": "Hello",
+    "你好": "Hello", 
     "謝謝": "Thank you",
     "對不起": "Sorry",
     "早安": "Good morning",
