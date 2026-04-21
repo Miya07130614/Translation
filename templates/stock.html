@@ -3,45 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ask a Question</title>
+    <title>台灣股市查詢 (證交所來源)</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f7;
             color: #333;
+            margin: 0;
+            padding: 0;
         }
         header {
-            background-color: #4CAF50;
+            background-color: #2e7d32; /* 深綠色質感 */
             color: white;
-            padding: 10px;
+            padding: 20px;
             text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         section {
-            margin: 20px;
+            display: flex;
+            justify-content: center;
+            margin-top: 40px;
         }
         .form-box {
             background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        h2 {
+            margin-top: 0;
+            font-size: 1.2em;
+            color: #2e7d32;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box; /* 確保寬度包含 padding */
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        input[type="submit"], .btn-home {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s;
+            text-decoration: none;
+            text-align: center;
+        }
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        .btn-home {
+            background-color: #e0e0e0;
+            color: #333;
+        }
+        .btn-home:hover {
+            background-color: #bdbdbd;
+        }
+        .result-box {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e8f5e9;
+            border-left: 5px solid #4CAF50;
+            border-radius: 4px;
+            word-wrap: break-word;
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1>查詢股價</h1>
-    </header>
-    <section>
-        <div class="form-box">
-            <form action="/stock" method="post">
-                <label for="question">股票號碼:</label><br>
-                <input type="text" id="question" name="question" value="{{ question }}"><br><br>
-                <label for="answer">昨天收盤價:</label><br>
-                <input type="text" id="answer" name="answer" readonly value="{{ answer }}"><br><br>
-                <input type="submit" value="送出">
-                <input type="button" value="回首頁" onclick="window.location.href='/'">
-            </form>
+
+<header>
+    <h1>股市行情查詢</h1>
+</header>
+
+<section>
+    <div class="form-box">
+        <h2>請輸入股票資訊</h2>
+        <form action="/stock" method="post">
+            <label for="question">股票代號：</label>
+            <input type="text" id="question" name="question" placeholder="例如: 2330" value="{{ question }}" required>
+            
+            <div class="button-group">
+                <input type="submit" value="開始查詢">
+                <a href="/" class="btn-home">回首頁</a>
+            </div>
+        </form>
+
+        {% if answer %}
+        <div class="result-box">
+            <strong>查詢結果：</strong><br>
+            <span>{{ answer }}</span>
         </div>
-    </section>
+        {% endif %}
+    </div>
+</section>
+
 </body>
 </html>
