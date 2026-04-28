@@ -31,7 +31,7 @@ def stock():
             res_idx = requests.get(idx_url, verify=False, timeout=5)
             
             # 2. 嘗試個股 API
-            stock_url = "https://www.twse.com.tw/rwd/zh/afterTrading/STOCK_DAY"
+            stock_url = "https://query1.finance.yahoo.com/v8/finance/chart/{symbol}"
             res_stock = requests.get(stock_url, verify=False, timeout=5)
 
             found = False
