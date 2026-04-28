@@ -31,7 +31,7 @@ def stock():
             res_idx = requests.get(idx_url, verify=False, timeout=5)
             
             # 2. 嘗試個股 API
-            stock_url = "https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_AVG_ALL"
+            stock_url = "https://www.twse.com.tw/rwd/zh/afterTrading/STOCK_DAY"
             res_stock = requests.get(stock_url, verify=False, timeout=5)
 
             found = False
