@@ -6,25 +6,27 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 app = Flask(__name__)
 
 # 韓文題庫
-zh_ko_dict = {"你好": "안녕하세요", "謝謝": "감사합니다", "老師": "선생님", "學生": "학생"}
+zh_ko_dict = {"你好": "?????", "謝謝": "?????", "老師": "???", "學生": "??"}
 
 
 def fetch_tw_stock_quote(symbol):
-    base_url = "https://query1.finance.yahoo.com/v7/finance/quote"
+    base_url = "https://query1.finance.yahoo.com/v8/finance/chart"
     candidates = [f"{symbol}.TW", f"{symbol}.TWO"]
 
     for yahoo_symbol in candidates:
         res = requests.get(
-            base_url,
-            params={"symbols": yahoo_symbol},
+            f"{base_url}/{yahoo_symbol}",
+            params={"interval": "1d", "range": "2d"},
             verify=False,
             timeout=5,
         )
         res.raise_for_status()
 
-        result = res.json().get("quoteResponse", {}).get("result", [])
+        result = res.json().get("chart", {}).get("result", [])
         if result:
-            return result[0]
+            meta = result[0].get("meta", {})
+            if meta.get("regularMarketPrice") is not None:
+                return meta
 
     return None
 
@@ -53,27 +55,13 @@ def stock():
         question = request.form.get("question", "").strip()
 
         try:
-            idx_url = "https://openapi.twse.com.tw/v1/indices/TWT48U"
-            res_idx = requests.get(idx_url, verify=False, timeout=5)
-
             found = False
 
-            if res_idx.status_code == 200:
-                data_idx = res_idx.json()
-                item = next((i for i in data_idx if i.get("指數") == question), None)
-                if item:
-                    answer = (
-                        f"日期：{item.get('日期')} | {item.get('指數')} | "
-                        f"收盤：{item.get('收盤指數')} | "
-                        f"漲跌：{item.get('漲跌點數')} ({item.get('漲跌百分比')}%)"
-                    )
-                    found = True
-
-            if not found and question.isdigit():
+            if question.isdigit():
                 stock_item = fetch_tw_stock_quote(question)
                 if stock_item:
                     market_price = stock_item.get("regularMarketPrice", "無資料")
-                    previous_close = stock_item.get("regularMarketPreviousClose", "無資料")
+                    previous_close = stock_item.get("previousClose", "無資料")
                     stock_name = stock_item.get("longName") or stock_item.get("shortName") or question
                     stock_code = stock_item.get("symbol", "").split(".")[0] or question
                     answer = (
@@ -81,6 +69,20 @@ def stock():
                         f"現價：{market_price} | 昨收：{previous_close}"
                     )
                     found = True
+            else:
+                idx_url = "https://openapi.twse.com.tw/v1/indices/TWT48U"
+                res_idx = requests.get(idx_url, verify=False, timeout=5)
+
+                if res_idx.status_code == 200 and "json" in res_idx.headers.get("Content-Type", "").lower():
+                    data_idx = res_idx.json()
+                    item = next((i for i in data_idx if i.get("指數") == question), None)
+                    if item:
+                        answer = (
+                            f"日期：{item.get('日期')} | {item.get('指數')} | "
+                            f"收盤：{item.get('收盤指數')} | "
+                            f"漲跌：{item.get('漲跌點數')} ({item.get('漲跌百分比')}%)"
+                        )
+                        found = True
 
             if not found:
                 answer = f"找不到「{question}」的資料。請輸入 2330 或 發行量加權股價指數"
